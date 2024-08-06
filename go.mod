@@ -1,4 +1,4 @@
-module m7s.live/plugin/preview/v4
+module github.com/me00010/plugin-preview/v4
 
 go 1.21
 
