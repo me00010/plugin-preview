@@ -39,19 +39,10 @@
       box-shadow: 0 10px 20px;
     }
 
-    <!-- .container-shell:before {
-      content: "preview powered by jessibuca pro";
-      position: absolute;
-      color: darkgray;
-      top: 4px;
-      left: 10px;
-      text-shadow: 1px 1px black;
-    } -->
-
     #container {
       background: rgba(13, 14, 27, 0.7);
-      width: 960px;
-      height: 597px;
+      width: 100%;
+      height: 100%;
     }
 
     .input {
@@ -105,79 +96,9 @@
 </head>
 
 <body class="page">
-  <div class="root">
     <div class="container-shell">
       <div id="container"></div>
-      <div class="input">
-        <div><input type="checkbox" checked id="useMSE" /><span>MediaSource</span>
-          <input type="checkbox" id="useWCS" /><span>Webcodec</span>
-          <input type="checkbox" id="useSIMD" /><span>SIMD</span>
-        </div>
-      </div>
-      <div class="input">
-        <span>协议切换:</span>
-        <select id="protocol">
-          <option value="hdl">hdl(http-flv)</option>
-          <option value="ws-flv">ws-flv</option>
-          <option value="ws-raw">jessica(ws-raw)</option>
-          <option value="ws-h265">ws-h265</option>
-          <option value="ws-h264">ws-h264</option>
-          <option value="http-h265">http-h265</option>
-          <option value="http-h264">http-h264</option>
-          <option value="fmp4">fmp4</option>
-          <option value="hls">hls</option>
-          <option value="webrtc">webrtc</option>
-          <option value="webtransport">webtransport</option>
-        </select>
-      </div>
-      <div class="input">
-        <div>
-          <span>缓存时长：</span>
-          <input placeholder="单位：秒" type="text" id="videoBuffer" style="width: 50px" value="0">秒
-          <span>缓存延迟(延迟超过会触发丢帧)：</span>
-          <input placeholder="单位：秒" type="text" id="videoBufferDelay" style="width: 50px" value="5">秒
-          <button id="replay">重播</button>
-        </div>
-      </div>
-
-      <div class="input">
-        <div>输入URL：</div>
-        <input autocomplete="on" id="playUrl" value="" />
-        <button id="play">播放</button>
-        <button id="pause" style="display: none">停止</button>
-      </div>
-      <div class="input" style="line-height: 30px">
-        <button id="destroy">销毁</button>
-        <span class="fps-inner"></span>
-      </div>
     </div>
-  </div>
-  <div class="input">
-    <div>
-      当前浏览器：
-      <span id="mseSupport264" style="color: green;display: none">支持MSE H264解码；</span>
-      <span id="mseSupport" style="color: green;display: none">支持MSE H265解码；</span>
-      <span id="mseNotSupport" style="color: red;display: none">不支持MSE H264解码；</span>
-      <span id="mseNotSupport264" style="color: red;display: none">不支持MSE H265解码,会自动切换成wasm解码；</span>
-    </div>
-  </div>
-  <div class="input">
-    <div>
-      当前浏览器：
-      <span id="wcsSupport264" style="color: green;display: none">支持Webcodecs H264解码；</span>
-      <span id="wcsSupport" style="color: green;display: none">支持Webcodecs H265解码；</span>
-      <span id="wcsNotSupport264" style="color: red;display: none">不支持Webcodecs H264解码(https/localhost)；</span>
-      <span id="wcsNotSupport" style="color: red;display: none">不支持Webcodecs
-        H265解码(https/localhost),会自动切换成wasm解码</span>
-    </div>
-  </div>
-  <div class="input">
-    <div>
-      当前浏览器：
-      <span id="simdSupport" style="color: green;display: none">支持WASM SIMD解码</span>
-      <span id="simdNotSupport" style="color: red;display: none">不支持WASM SIMD解码,会自动切换成wasm解码</span>
-    </div>
-  </div>
   <script>
     function getBrowser() {
       const UserAgent = window.navigator.userAgent.toLowerCase() || '';
