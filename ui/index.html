@@ -7,7 +7,6 @@
   <script src="./vconsole.js"></script>
   <script src="./jessibuca-pro-demo.js"></script>
   <style>
-
     body::before {
       content: "";
       position: absolute;
@@ -24,11 +23,21 @@
       width: 100vw !important;
       height: 100vh !important;
     }
+    #modal{
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw !important;
+      height: 100vh !important;
+    }
   </style>
 </head>
 
 <body class="page">
+  <!-- 添加遮罩层 -->
+  <div id="modal" z-index="9999" onclick="play()"></div>
   <div id="container"></div>
+
   <script>
 
     function getBrowser() {
@@ -124,65 +133,11 @@
       return WebAssembly && WebAssembly.validate(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 96, 0, 1, 123, 3, 2, 1, 0, 10, 10, 1, 8, 0, 65, 0, 253, 15, 253, 98, 11]));
     }
 
-    let support = document.getElementById('mseSupport');
-    let notSupport = document.getElementById('mseNotSupport');
-    if (checkSupportMSEHevc()) {
-      support.style.display = 'inline-block';
-    } else {
-      notSupport.style.display = 'inline-block';
-    }
-
-    let supportH264 = document.getElementById('mseSupport264');
-    let notSupportH264 = document.getElementById('mseNotSupport264');
-    if (checkSupportMSEH264()) {
-      supportH264.style.display = 'inline-block';
-    } else {
-      notSupportH264.style.display = 'inline-block';
-    }
-
-
-    let supportWcsHevc = document.getElementById('wcsSupport');
-    let notSupportWcsHevc = document.getElementById('wcsNotSupport');
-
-    if (checkSupportWCSHevc()) {
-      supportWcsHevc.style.display = 'inline-block';
-    } else {
-      notSupportWcsHevc.style.display = 'inline-block';
-    }
-    let supportWcs = document.getElementById('wcsSupport264');
-    let notSupportWcs = document.getElementById('wcsNotSupport264');
-    if (checkSupportWCS()) {
-      supportWcs.style.display = 'inline-block';
-    } else {
-      notSupportWcs.style.display = 'inline-block';
-    }
-
-
-    let supportSimd = document.getElementById('simdSupport');
-    let notSupportSimd = document.getElementById('simdNotSupport');
-
-    if (checkSupportSIMD()) {
-      supportSimd.style.display = 'inline-block';
-    } else {
-      notSupportSimd.style.display = 'inline-block';
-    }
 
   </script>
 
   <script>
-    var $player = document.getElementById('play');
-    var $pause = document.getElementById('pause');
-    var $playHref = document.getElementById('playUrl');
     var $container = document.getElementById('container');
-    var $destroy = document.getElementById('destroy');
-    var $useMSE = document.getElementById('useMSE');
-    var $useSIMD = document.getElementById('useSIMD');
-    var $useWCS = document.getElementById('useWCS');
-    var $videoBuffer = document.getElementById('videoBuffer');
-    var $videoBufferDelay = document.getElementById('videoBufferDelay');
-    var $replay = document.getElementById('replay');
-    var $fps = document.querySelector('.fps-inner');
-    var $protocol = document.getElementById('protocol');
     var showOperateBtns = true; // 是否显示按钮
     var forceNoOffscreen = true; //
     var jessibuca = null;
@@ -204,7 +159,7 @@
     const query = new URLSearchParams(location.search);
     const isHttps = location.protocol.startsWith("https");
     const type = query.get('type') || 'hdl';
-    $protocol.value = type;
+    const auto = query.get('auto') || '0';
     let pluginName = type;
     let ext = "." + type;
     switch (type) {
@@ -242,29 +197,29 @@
         ext = '.m3u8';
         break;
     }
-    $playHref.value = (type.startsWith('ws') ? (isHttps ? "wss://" : "ws://") + location.host : location.origin) + location.pathname.replace('preview', pluginName) + ext;
+    let url = (type.startsWith('ws') ? (isHttps ? "wss://" : "ws://") + location.host : location.origin) + location.pathname.replace('preview', pluginName) + ext;
     switch (type) {
       case 'webrtc':
-        $playHref.value = 'webrtc://' + location.host + location.pathname.replace('preview', pluginName + '/play');
+        url = 'webrtc://' + location.host + location.pathname.replace('preview', pluginName + '/play');
         break;
       case 'webtransport':
-        $playHref.value = 'wt://' + location.hostname + ':4433' + location.pathname.replace('preview', 'play');
+        url = 'wt://' + location.hostname + ':4433' + location.pathname.replace('preview', 'play');
         break;
     }
     function create() {
       jessibuca = new JessibucaPro({
         container: $container,
-        videoBuffer: Number($videoBuffer.value), // 缓存时长
-        videoBufferDelay: Number($videoBufferDelay.value), // 1000s
+        videoBuffer: Number('0'), // 缓存时长
+        videoBufferDelay: Number('10'), // 1000s
         isResize: false,
         text: "",
         loadingText: "加载中",
         debug: true,
         isEmitSEI: true,
         debugLevel: "debug",
-        useMSE: $useMSE.checked === true,
-        useSIMD: $useSIMD.checked === true,
-        useWCS: $useWCS.checked === true,
+        useMSE: true,
+        useSIMD: false,
+        useWCS: false,
         showBandwidth: showOperateBtns, // 显示网速
         showPerformance: showOperateBtns, // 显示性能
         operateBtns: {
@@ -302,106 +257,29 @@
       })
       jessibuca.on('stats', (stats) => {
         // console.log('stats', stats);
-        $fps.textContent = `FPS: ${stats.fps} DFPS: ${stats.dfps}`;
+        //$fps.textContent = `FPS: ${stats.fps} DFPS: ${stats.dfps}`;
       });
 
       jessibuca.on(JessibucaPro.EVENTS.crashLog, (log) => {
         console.log('crashLog', log);
       });
-
-
-      $player.style.display = 'inline-block';
-      $pause.style.display = 'none';
-      $destroy.style.display = 'none';
-      $fps.textContent = '';
+      if (auto == '0') {
+        this.play();
+      }
     }
-
-
-    create();
 
     function play() {
-      var href = $playHref.value;
-      if (href) {
-        jessibuca.play(href);
-        $player.style.display = 'none';
-        $pause.style.display = 'inline-block';
-        $destroy.style.display = 'inline-block';
-      }
-    }
-
-
-    function replay() {
-      if (jessibuca) {
-        jessibuca.destroy().then(() => {
-          create();
-          play();
+      console.log("开始播放！！");
+      document.getElementById('modal').remove();
+      setTimeout(() => {
+        jessibuca.play(url).then(() => {
+          console.log('play success')
+        }).catch((e) => {
+          console.error(e);
         });
-      } else {
-        create();
-        play();
-      }
+      }, 150)
     }
-
-    $replay.addEventListener('click', function () {
-      replay();
-    });
-
-    $player.addEventListener('click', function () {
-      play();
-    }, false);
-
-
-    $pause.addEventListener('click', function () {
-      $player.style.display = 'inline-block';
-      $pause.style.display = 'none';
-      $fps.textContent = '';
-      jessibuca.pause();
-    });
-
-    $destroy.addEventListener('click', function () {
-      if (jessibuca) {
-        jessibuca.destroy().then(() => {
-          create();
-        });
-      } else {
-        create();
-      }
-
-    });
-
-    $useMSE.addEventListener('click', function () {
-      const checked = $useMSE.checked;
-      if (checked) {
-        $useSIMD.checked = false;
-        $useWCS.checked = false;
-      }
-      replay();
-    });
-
-    $useSIMD.addEventListener('click', function () {
-      const checked = $useSIMD.checked;
-      if (checked) {
-        $useMSE.checked = false;
-        $useWCS.checked = false;
-      }
-      replay();
-    });
-
-    $useWCS.addEventListener('click', function () {
-      const checked = $useWCS.checked;
-      if (checked) {
-        $useMSE.checked = false;
-        $useSIMD.checked = false;
-      }
-      replay();
-    });
-
-    $protocol.addEventListener('change', function () {
-      if ($protocol.value === 'webtransport')
-        location.replace('https://local.monibuca.com:8443' + location.pathname + '?type=' + $protocol.value);
-      else
-        location.replace(location.origin + location.pathname + '?type=' + $protocol.value);
-    });
+    create();
   </script>
 
 </body>
