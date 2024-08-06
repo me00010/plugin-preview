@@ -15,7 +15,6 @@
       bottom: 0;
       right: 0;
       -webkit-mask-image: linear-gradient(to bottom, transparent, black);
-      background: linear-gradient(90deg, rgb(34, 180, 224), rgb(64, 11, 207));
     }
 
 
@@ -27,6 +26,9 @@
       position: absolute;
       top: 0;
       left: 0;
+      z-index: 9999;
+      left: 0;
+      background: linear-gradient(90deg, rgb(4, 60, 77), rgb(2, 0, 5));
       width: 100vw !important;
       height: 100vh !important;
     }
@@ -35,11 +37,10 @@
 
 <body class="page">
   <!-- 添加遮罩层 -->
-  <div id="modal" z-index="9999" onclick="play()"></div>
+  <div id="modal"  onclick="play()"></div>
   <div id="container"></div>
 
   <script>
-
     function getBrowser() {
       const UserAgent = window.navigator.userAgent.toLowerCase() || '';
       let browserInfo = {
