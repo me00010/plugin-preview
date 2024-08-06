@@ -54,7 +54,7 @@ func (p *PreviewConfig) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	} else {
 		//w.Header().Set("Cross-Origin-Opener-Policy", "same-origin")
 		//w.Header().Set("Cross-Origin-Embedder-Policy", "require-corp")
-		b, err = f.ReadFile("ui/demo.html")
+		b, err = f.ReadFile("ui/index.html")
 		w.Write(b)
 	}
 }
